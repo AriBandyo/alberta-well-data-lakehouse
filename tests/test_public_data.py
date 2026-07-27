@@ -1,7 +1,13 @@
 from pathlib import Path
 
-
-from alberta_well_lakehouse.public_data import PublicPaths, build_gold, build_silver, load_bronze, municipality_key, quality_report
+from alberta_well_lakehouse.public_data import (
+    PublicPaths,
+    build_gold,
+    build_silver,
+    load_bronze,
+    municipality_key,
+    quality_report,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 

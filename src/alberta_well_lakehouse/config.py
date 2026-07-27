@@ -22,7 +22,7 @@ class Settings:
     spark_shuffle_partitions: int
 
     @classmethod
-    def from_env(cls) -> "Settings":
+    def from_env(cls) -> Settings:
         root = Path(os.getenv("PROJECT_ROOT", ".")).resolve()
 
         def resolve(name: str, default: str) -> Path:

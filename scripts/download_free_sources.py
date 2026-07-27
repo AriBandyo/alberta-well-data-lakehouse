@@ -13,10 +13,21 @@ ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
 REGIONAL_FILES = {
-    "regional-oil": os.getenv("REGIONAL_OIL_CSV_URL", "https://regionaldashboard.alberta.ca/export/opendata/Oil%20Production/csvs"),
-    "regional-gas": os.getenv("REGIONAL_GAS_CSV_URL", "https://regionaldashboard.alberta.ca/export/opendata/Natural%20Gas%20Production/csvs"),
-    "regional-wells": os.getenv("REGIONAL_WELL_COUNT_CSV_URL", "https://regionaldashboard.alberta.ca/export/opendata/Well%20Count/csvs"),
-    "aer-st37": os.getenv("AER_ST37_EXCEL_URL", "https://static.aer.ca/prd/documents/sts/st37/ST_37_Excel.zip"),
+    "regional-oil": os.getenv(
+        "REGIONAL_OIL_CSV_URL",
+        "https://regionaldashboard.alberta.ca/export/opendata/Oil%20Production/csvs",
+    ),
+    "regional-gas": os.getenv(
+        "REGIONAL_GAS_CSV_URL",
+        "https://regionaldashboard.alberta.ca/export/opendata/Natural%20Gas%20Production/csvs",
+    ),
+    "regional-wells": os.getenv(
+        "REGIONAL_WELL_COUNT_CSV_URL",
+        "https://regionaldashboard.alberta.ca/export/opendata/Well%20Count/csvs",
+    ),
+    "aer-st37": os.getenv(
+        "AER_ST37_EXCEL_URL", "https://static.aer.ca/prd/documents/sts/st37/ST_37_Excel.zip"
+    ),
 }
 
 PETRINEX_INFRA = {
@@ -48,15 +59,25 @@ def download(url: str, destination: Path, attempts: int = 3) -> None:
         except (requests.RequestException, OSError) as exc:
             error = exc
             if attempt < attempts:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
     raise RuntimeError(f"Failed to download {url}: {error}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download free official Alberta energy datasets")
-    parser.add_argument("source", choices=[*REGIONAL_FILES, *PETRINEX_INFRA, "petrinex-volumetric", "aer-well-feature-sample"])
+    parser.add_argument(
+        "source",
+        choices=[
+            *REGIONAL_FILES,
+            *PETRINEX_INFRA,
+            "petrinex-volumetric",
+            "aer-well-feature-sample",
+        ],
+    )
     parser.add_argument("--month", help="Petrinex volumetric production month in YYYY-MM format")
-    parser.add_argument("--limit", type=int, default=2000, help="Maximum ArcGIS well features to download")
+    parser.add_argument(
+        "--limit", type=int, default=2000, help="Maximum ArcGIS well features to download"
+    )
     args = parser.parse_args()
     out = ROOT / "data" / "external"
 

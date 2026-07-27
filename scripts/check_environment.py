@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import importlib
-import os
 import shutil
 import subprocess
 import sys
@@ -42,7 +41,9 @@ def check_java() -> bool:
     if java is None:
         print("[ERROR] Java was not found on PATH.")
         print("        Install OpenJDK 17 before running the PySpark/Delta pipeline.")
-        print("        The official snapshot pipeline can still run without Spark by using `make public-data`.")
+        print(
+            "        The official snapshot pipeline can still run without Spark by using `make public-data`."
+        )
         return False
 
     try:

@@ -4,7 +4,12 @@ from pathlib import Path
 
 from dagster import AssetExecutionContext, Definitions, ScheduleDefinition, asset, define_asset_job
 
-from alberta_well_lakehouse.public_data import PublicPaths, load_bronze, quality_report, run_public_pipeline
+from alberta_well_lakehouse.public_data import (
+    PublicPaths,
+    load_bronze,
+    quality_report,
+    run_public_pipeline,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -34,5 +39,11 @@ def municipality_energy_marts(context: AssetExecutionContext) -> dict[str, objec
 
 
 daily_job = define_asset_job("daily_official_energy_snapshot")
-daily_schedule = ScheduleDefinition(job=daily_job, cron_schedule="0 6 * * *", execution_timezone="America/Edmonton")
-defs = Definitions(assets=[official_public_snapshot, public_data_quality, municipality_energy_marts], jobs=[daily_job], schedules=[daily_schedule])
+daily_schedule = ScheduleDefinition(
+    job=daily_job, cron_schedule="0 6 * * *", execution_timezone="America/Edmonton"
+)
+defs = Definitions(
+    assets=[official_public_snapshot, public_data_quality, municipality_energy_marts],
+    jobs=[daily_job],
+    schedules=[daily_schedule],
+)

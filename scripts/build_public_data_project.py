@@ -66,33 +66,33 @@ def create_analysis(paths: PublicPaths, metrics: dict[str, object]) -> None:
 
     text = f"""# Actual output and findings
 
-The pipeline processed {metrics['source_records']} official public-data records covering {metrics['municipalities']} distinct Alberta municipalities. All {metrics['quality_checks']} automated data-quality checks passed with {metrics['quality_failures']} failures.
+The pipeline processed {metrics["source_records"]} official public-data records covering {metrics["municipalities"]} distinct Alberta municipalities. All {metrics["quality_checks"]} automated data-quality checks passed with {metrics["quality_failures"]} failures.
 
 ## Snapshot totals
 
-- Oil production represented in the included 2025 snapshot: {format_volume(float(metrics['snapshot_oil_m3']))} m³
-- Natural gas production represented in the included 2025 snapshot: {format_volume(float(metrics['snapshot_gas_m3']))} m³
-- Wells represented in the included 2024 well-count snapshot: {int(metrics['snapshot_reported_wells']):,}
+- Oil production represented in the included 2025 snapshot: {format_volume(float(metrics["snapshot_oil_m3"]))} m³
+- Natural gas production represented in the included 2025 snapshot: {format_volume(float(metrics["snapshot_gas_m3"]))} m³
+- Wells represented in the included 2024 well-count snapshot: {int(metrics["snapshot_reported_wells"]):,}
 
 These are totals for the curated municipalities included in this repository, not province-wide totals.
 
 ## Leading municipalities
 
 ### Oil production
-{rows(top_oil, 'oil_m3_2025', ' m³')}
+{rows(top_oil, "oil_m3_2025", " m³")}
 
 ### Natural gas production
-{rows(top_gas, 'gas_m3_2025', ' m³')}
+{rows(top_gas, "gas_m3_2025", " m³")}
 
 ## Production momentum
 
 The momentum measure averages the available oil and natural-gas year-over-year changes. It is used only when at least one production measure is available.
 
 ### Strongest growth
-{rows(growing, 'combined_yoy_pct', '%')}
+{rows(growing, "combined_yoy_pct", "%")}
 
 ### Largest declines
-{rows(declining, 'combined_yoy_pct', '%')}
+{rows(declining, "combined_yoy_pct", "%")}
 
 ## Generated assets
 
@@ -180,14 +180,14 @@ def create_dashboard(paths: PublicPaths, metrics: dict[str, object]) -> None:
   </header>
   <main>
     <section class="cards">
-      <div class="card">Source records<div class="value">{metrics['source_records']}</div></div>
-      <div class="card">Municipalities<div class="value">{metrics['municipalities']}</div></div>
-      <div class="card">Oil in snapshot<div class="value">{format_volume(float(metrics['snapshot_oil_m3']))} m³</div></div>
-      <div class="card">Gas in snapshot<div class="value">{format_volume(float(metrics['snapshot_gas_m3']))} m³</div></div>
+      <div class="card">Source records<div class="value">{metrics["source_records"]}</div></div>
+      <div class="card">Municipalities<div class="value">{metrics["municipalities"]}</div></div>
+      <div class="card">Oil in snapshot<div class="value">{format_volume(float(metrics["snapshot_oil_m3"]))} m³</div></div>
+      <div class="card">Gas in snapshot<div class="value">{format_volume(float(metrics["snapshot_gas_m3"]))} m³</div></div>
     </section>
     <section class="grid">
-      <div class="panel"><h2>Top oil production</h2>{bar_rows(top_oil, 'oil_m3_2025')}</div>
-      <div class="panel"><h2>Top natural gas production</h2>{bar_rows(top_gas, 'gas_m3_2025')}</div>
+      <div class="panel"><h2>Top oil production</h2>{bar_rows(top_oil, "oil_m3_2025")}</div>
+      <div class="panel"><h2>Top natural gas production</h2>{bar_rows(top_gas, "gas_m3_2025")}</div>
     </section>
     <section class="panel" style="margin-top:18px">
       <h2>Municipality summary</h2>
@@ -204,6 +204,7 @@ def create_dashboard(paths: PublicPaths, metrics: dict[str, object]) -> None:
 </html>"""
     (ROOT / "tableau" / "dashboard_preview.html").write_text(html, encoding="utf-8")
 
+
 def main() -> None:
     metrics = run_public_pipeline(ROOT)
     paths = PublicPaths.from_root(ROOT)
@@ -211,7 +212,9 @@ def main() -> None:
     create_analysis(paths, metrics)
     create_dashboard(paths, metrics)
     print(json.dumps(metrics, indent=2))
-    print("Generated official-snapshot lakehouse outputs, results, charts, database, and dashboard.")
+    print(
+        "Generated official-snapshot lakehouse outputs, results, charts, database, and dashboard."
+    )
 
 
 if __name__ == "__main__":

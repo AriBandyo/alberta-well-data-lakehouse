@@ -11,9 +11,18 @@ from typing import Any
 import pandas as pd
 
 REQUIRED_COLUMNS = {
-    "municipality", "year", "metric", "value", "unit", "yoy_change_pct",
-    "five_year_change_pct", "source_name", "source_url", "source_last_updated",
-    "licence", "snapshot_retrieved_at",
+    "municipality",
+    "year",
+    "metric",
+    "value",
+    "unit",
+    "yoy_change_pct",
+    "five_year_change_pct",
+    "source_name",
+    "source_url",
+    "source_last_updated",
+    "licence",
+    "snapshot_retrieved_at",
 }
 
 
@@ -29,7 +38,7 @@ class PublicPaths:
     database: Path
 
     @classmethod
-    def from_root(cls, root: Path) -> "PublicPaths":
+    def from_root(cls, root: Path) -> PublicPaths:
         root = root.resolve()
         return cls(
             root=root,
@@ -43,7 +52,14 @@ class PublicPaths:
         )
 
     def ensure(self) -> None:
-        for path in (self.bronze, self.silver, self.gold, self.tableau, self.results, self.database.parent):
+        for path in (
+            self.bronze,
+            self.silver,
+            self.gold,
+            self.tableau,
+            self.results,
+            self.database.parent,
+        ):
             path.mkdir(parents=True, exist_ok=True)
 
 
@@ -72,8 +88,13 @@ def _load_one(path: Path, expected_metric: str) -> pd.DataFrame:
 def load_bronze(paths: PublicPaths) -> dict[str, pd.DataFrame]:
     paths.ensure()
     datasets = {
-        "oil": _load_one(paths.source / "oil_production_by_municipality_2025.csv", "oil_production"),
-        "gas": _load_one(paths.source / "natural_gas_production_by_municipality_2025.csv", "natural_gas_production"),
+        "oil": _load_one(
+            paths.source / "oil_production_by_municipality_2025.csv", "oil_production"
+        ),
+        "gas": _load_one(
+            paths.source / "natural_gas_production_by_municipality_2025.csv",
+            "natural_gas_production",
+        ),
         "wells": _load_one(paths.source / "well_count_by_municipality_2024.csv", "well_count"),
     }
     for name, frame in datasets.items():
@@ -85,20 +106,42 @@ def quality_report(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     checks: list[dict[str, Any]] = []
 
     def add(dataset: str, check_name: str, failed_rows: int, severity: str = "ERROR") -> None:
-        checks.append({
-            "dataset": dataset,
-            "check_name": check_name,
-            "status": "PASS" if int(failed_rows) == 0 else "FAIL",
-            "failed_rows": int(failed_rows),
-            "severity": severity,
-        })
+        checks.append(
+            {
+                "dataset": dataset,
+                "check_name": check_name,
+                "status": "PASS" if int(failed_rows) == 0 else "FAIL",
+                "failed_rows": int(failed_rows),
+                "severity": severity,
+            }
+        )
 
     for name, frame in datasets.items():
-        add(name, "required_fields_not_null", int(frame[list(REQUIRED_COLUMNS)].isna().any(axis=1).sum()))
-        add(name, "municipality_year_unique", int(frame.duplicated(["municipality", "year", "metric"]).sum()))
-        add(name, "value_non_negative", int((pd.to_numeric(frame["value"], errors="coerce") < 0).sum()))
-        add(name, "year_in_expected_range", int((~pd.to_numeric(frame["year"], errors="coerce").between(2000, 2100)).sum()))
-        add(name, "source_url_is_https", int((~frame["source_url"].astype(str).str.startswith("https://")).sum()))
+        add(
+            name,
+            "required_fields_not_null",
+            int(frame[list(REQUIRED_COLUMNS)].isna().any(axis=1).sum()),
+        )
+        add(
+            name,
+            "municipality_year_unique",
+            int(frame.duplicated(["municipality", "year", "metric"]).sum()),
+        )
+        add(
+            name,
+            "value_non_negative",
+            int((pd.to_numeric(frame["value"], errors="coerce") < 0).sum()),
+        )
+        add(
+            name,
+            "year_in_expected_range",
+            int((~pd.to_numeric(frame["year"], errors="coerce").between(2000, 2100)).sum()),
+        )
+        add(
+            name,
+            "source_url_is_https",
+            int((~frame["source_url"].astype(str).str.startswith("https://")).sum()),
+        )
         add(name, "licence_present", int(frame["licence"].astype(str).str.strip().eq("").sum()))
     return pd.DataFrame(checks)
 
@@ -111,8 +154,12 @@ def _standardize(frame: pd.DataFrame) -> pd.DataFrame:
     result["value"] = pd.to_numeric(result["value"], errors="raise").astype("float64")
     result["yoy_change_pct"] = pd.to_numeric(result["yoy_change_pct"], errors="coerce")
     result["five_year_change_pct"] = pd.to_numeric(result["five_year_change_pct"], errors="coerce")
-    result["source_last_updated"] = pd.to_datetime(result["source_last_updated"], errors="raise").dt.date.astype(str)
-    result["snapshot_retrieved_at"] = pd.to_datetime(result["snapshot_retrieved_at"], errors="raise").dt.date.astype(str)
+    result["source_last_updated"] = pd.to_datetime(
+        result["source_last_updated"], errors="raise"
+    ).dt.date.astype(str)
+    result["snapshot_retrieved_at"] = pd.to_datetime(
+        result["snapshot_retrieved_at"], errors="raise"
+    ).dt.date.astype(str)
     return result.sort_values(["municipality", "year"]).drop_duplicates(
         ["municipality", "year", "metric"], keep="last"
     )
@@ -131,24 +178,69 @@ def _safe_prior(current: pd.Series, percent: pd.Series) -> pd.Series:
 
 
 def build_gold(silver: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
-    oil = silver["oil"].rename(columns={
-        "value": "oil_m3_2025", "yoy_change_pct": "oil_yoy_pct",
-        "five_year_change_pct": "oil_five_year_pct", "year": "oil_year",
-    })[["municipality_key", "municipality", "oil_year", "oil_m3_2025", "oil_yoy_pct", "oil_five_year_pct"]]
-    gas = silver["gas"].rename(columns={
-        "value": "gas_m3_2025", "yoy_change_pct": "gas_yoy_pct",
-        "five_year_change_pct": "gas_five_year_pct", "year": "gas_year",
-    })[["municipality_key", "municipality", "gas_year", "gas_m3_2025", "gas_yoy_pct", "gas_five_year_pct"]]
-    wells = silver["wells"].rename(columns={
-        "value": "well_count_2024", "yoy_change_pct": "well_count_yoy_pct",
-        "five_year_change_pct": "well_count_five_year_pct", "year": "well_count_year",
-    })[["municipality_key", "municipality", "well_count_year", "well_count_2024", "well_count_yoy_pct", "well_count_five_year_pct"]]
+    oil = silver["oil"].rename(
+        columns={
+            "value": "oil_m3_2025",
+            "yoy_change_pct": "oil_yoy_pct",
+            "five_year_change_pct": "oil_five_year_pct",
+            "year": "oil_year",
+        }
+    )[
+        [
+            "municipality_key",
+            "municipality",
+            "oil_year",
+            "oil_m3_2025",
+            "oil_yoy_pct",
+            "oil_five_year_pct",
+        ]
+    ]
+    gas = silver["gas"].rename(
+        columns={
+            "value": "gas_m3_2025",
+            "yoy_change_pct": "gas_yoy_pct",
+            "five_year_change_pct": "gas_five_year_pct",
+            "year": "gas_year",
+        }
+    )[
+        [
+            "municipality_key",
+            "municipality",
+            "gas_year",
+            "gas_m3_2025",
+            "gas_yoy_pct",
+            "gas_five_year_pct",
+        ]
+    ]
+    wells = silver["wells"].rename(
+        columns={
+            "value": "well_count_2024",
+            "yoy_change_pct": "well_count_yoy_pct",
+            "five_year_change_pct": "well_count_five_year_pct",
+            "year": "well_count_year",
+        }
+    )[
+        [
+            "municipality_key",
+            "municipality",
+            "well_count_year",
+            "well_count_2024",
+            "well_count_yoy_pct",
+            "well_count_five_year_pct",
+        ]
+    ]
 
-    dim = pd.concat([
-        oil[["municipality_key", "municipality"]],
-        gas[["municipality_key", "municipality"]],
-        wells[["municipality_key", "municipality"]],
-    ]).drop_duplicates("municipality_key").sort_values("municipality")
+    dim = (
+        pd.concat(
+            [
+                oil[["municipality_key", "municipality"]],
+                gas[["municipality_key", "municipality"]],
+                wells[["municipality_key", "municipality"]],
+            ]
+        )
+        .drop_duplicates("municipality_key")
+        .sort_values("municipality")
+    )
 
     summary = dim.merge(oil.drop(columns="municipality"), on="municipality_key", how="left")
     summary = summary.merge(gas.drop(columns="municipality"), on="municipality_key", how="left")
@@ -158,33 +250,87 @@ def build_gold(silver: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
         summary[column] = summary[column].fillna(0.0)
     summary["oil_m3_2024_estimated"] = _safe_prior(summary["oil_m3_2025"], summary["oil_yoy_pct"])
     summary["gas_m3_2024_estimated"] = _safe_prior(summary["gas_m3_2025"], summary["gas_yoy_pct"])
-    summary["oil_m3_2020_estimated"] = _safe_prior(summary["oil_m3_2025"], summary["oil_five_year_pct"])
-    summary["gas_m3_2020_estimated"] = _safe_prior(summary["gas_m3_2025"], summary["gas_five_year_pct"])
-    summary["oil_m3_per_reported_well"] = summary["oil_m3_2025"].where(summary["well_count_2024"].gt(0)) / summary["well_count_2024"].where(summary["well_count_2024"].gt(0))
-    summary["gas_m3_per_reported_well"] = summary["gas_m3_2025"].where(summary["well_count_2024"].gt(0)) / summary["well_count_2024"].where(summary["well_count_2024"].gt(0))
+    summary["oil_m3_2020_estimated"] = _safe_prior(
+        summary["oil_m3_2025"], summary["oil_five_year_pct"]
+    )
+    summary["gas_m3_2020_estimated"] = _safe_prior(
+        summary["gas_m3_2025"], summary["gas_five_year_pct"]
+    )
+    summary["oil_m3_per_reported_well"] = summary["oil_m3_2025"].where(
+        summary["well_count_2024"].gt(0)
+    ) / summary["well_count_2024"].where(summary["well_count_2024"].gt(0))
+    summary["gas_m3_per_reported_well"] = summary["gas_m3_2025"].where(
+        summary["well_count_2024"].gt(0)
+    ) / summary["well_count_2024"].where(summary["well_count_2024"].gt(0))
     summary["combined_yoy_pct"] = summary[["oil_yoy_pct", "gas_yoy_pct"]].mean(axis=1, skipna=True)
-    summary["activity_class"] = pd.cut(
-        summary["combined_yoy_pct"], bins=[-math.inf, -5, 5, math.inf],
-        labels=["Declining", "Stable", "Expanding"], include_lowest=True,
-    ).astype("string").fillna("Not comparable")
+    summary["activity_class"] = (
+        pd.cut(
+            summary["combined_yoy_pct"],
+            bins=[-math.inf, -5, 5, math.inf],
+            labels=["Declining", "Stable", "Expanding"],
+            include_lowest=True,
+        )
+        .astype("string")
+        .fillna("Not comparable")
+    )
 
     def minmax_log(series: pd.Series) -> pd.Series:
         logged = series.fillna(0).clip(lower=0).map(math.log1p)
         spread = logged.max() - logged.min()
-        return pd.Series(0.0, index=series.index) if spread == 0 else (logged - logged.min()) / spread
+        return (
+            pd.Series(0.0, index=series.index) if spread == 0 else (logged - logged.min()) / spread
+        )
 
     summary["energy_activity_score"] = (
         45 * minmax_log(summary["oil_m3_2025"])
         + 35 * minmax_log(summary["gas_m3_2025"])
         + 20 * minmax_log(summary["well_count_2024"])
     ).round(2)
-    summary = summary.sort_values(["energy_activity_score", "municipality"], ascending=[False, True])
+    summary = summary.sort_values(
+        ["energy_activity_score", "municipality"], ascending=[False, True]
+    )
 
-    fact = pd.concat([
-        silver["oil"][["municipality_key", "municipality", "year", "metric", "value", "unit", "yoy_change_pct", "five_year_change_pct"]],
-        silver["gas"][["municipality_key", "municipality", "year", "metric", "value", "unit", "yoy_change_pct", "five_year_change_pct"]],
-        silver["wells"][["municipality_key", "municipality", "year", "metric", "value", "unit", "yoy_change_pct", "five_year_change_pct"]],
-    ], ignore_index=True).sort_values(["metric", "value"], ascending=[True, False])
+    fact = pd.concat(
+        [
+            silver["oil"][
+                [
+                    "municipality_key",
+                    "municipality",
+                    "year",
+                    "metric",
+                    "value",
+                    "unit",
+                    "yoy_change_pct",
+                    "five_year_change_pct",
+                ]
+            ],
+            silver["gas"][
+                [
+                    "municipality_key",
+                    "municipality",
+                    "year",
+                    "metric",
+                    "value",
+                    "unit",
+                    "yoy_change_pct",
+                    "five_year_change_pct",
+                ]
+            ],
+            silver["wells"][
+                [
+                    "municipality_key",
+                    "municipality",
+                    "year",
+                    "metric",
+                    "value",
+                    "unit",
+                    "yoy_change_pct",
+                    "five_year_change_pct",
+                ]
+            ],
+        ],
+        ignore_index=True,
+    ).sort_values(["metric", "value"], ascending=[True, False])
 
     return {
         "dim_municipality": dim.reset_index(drop=True),
@@ -199,8 +345,12 @@ def write_database(paths: PublicPaths, tables: dict[str, pd.DataFrame]) -> None:
     with sqlite3.connect(paths.database) as connection:
         for name, frame in tables.items():
             frame.to_sql(name, connection, index=False, if_exists="replace")
-        connection.execute("CREATE INDEX idx_fact_municipality ON fct_energy_activity(municipality_key)")
-        connection.execute("CREATE INDEX idx_summary_score ON mart_municipality_energy_summary(energy_activity_score)")
+        connection.execute(
+            "CREATE INDEX idx_fact_municipality ON fct_energy_activity(municipality_key)"
+        )
+        connection.execute(
+            "CREATE INDEX idx_summary_score ON mart_municipality_energy_summary(energy_activity_score)"
+        )
 
 
 def _try_parquet(path: Path, frame: pd.DataFrame) -> bool:
@@ -211,7 +361,9 @@ def _try_parquet(path: Path, frame: pd.DataFrame) -> bool:
         return False
 
 
-def write_outputs(paths: PublicPaths, tables: dict[str, pd.DataFrame], quality: pd.DataFrame) -> dict[str, Any]:
+def write_outputs(
+    paths: PublicPaths, tables: dict[str, pd.DataFrame], quality: pd.DataFrame
+) -> dict[str, Any]:
     paths.ensure()
     parquet_written = True
     for name, frame in tables.items():
@@ -221,15 +373,27 @@ def write_outputs(paths: PublicPaths, tables: dict[str, pd.DataFrame], quality: 
     summary = tables["mart_municipality_energy_summary"]
     fact = tables["fct_energy_activity"]
     summary.to_csv(paths.tableau / "public_municipality_energy_summary.csv", index=False)
-    fact[fact["metric"].eq("oil_production")].to_csv(paths.tableau / "public_oil_production_2025.csv", index=False)
-    fact[fact["metric"].eq("natural_gas_production")].to_csv(paths.tableau / "public_natural_gas_production_2025.csv", index=False)
-    fact[fact["metric"].eq("well_count")].to_csv(paths.tableau / "public_well_count_2024.csv", index=False)
+    fact[fact["metric"].eq("oil_production")].to_csv(
+        paths.tableau / "public_oil_production_2025.csv", index=False
+    )
+    fact[fact["metric"].eq("natural_gas_production")].to_csv(
+        paths.tableau / "public_natural_gas_production_2025.csv", index=False
+    )
+    fact[fact["metric"].eq("well_count")].to_csv(
+        paths.tableau / "public_well_count_2024.csv", index=False
+    )
     quality.to_csv(paths.tableau / "data_quality_report.csv", index=False)
     quality.to_csv(paths.results / "data_quality_report.csv", index=False)
 
-    summary.nlargest(10, "oil_m3_2025")[["municipality", "oil_m3_2025", "oil_yoy_pct", "oil_five_year_pct"]].to_csv(paths.results / "top_oil_producers.csv", index=False)
-    summary.nlargest(10, "gas_m3_2025")[["municipality", "gas_m3_2025", "gas_yoy_pct", "gas_five_year_pct"]].to_csv(paths.results / "top_gas_producers.csv", index=False)
-    summary.nlargest(10, "well_count_2024")[["municipality", "well_count_2024", "well_count_yoy_pct", "well_count_five_year_pct"]].to_csv(paths.results / "top_well_activity.csv", index=False)
+    summary.nlargest(10, "oil_m3_2025")[
+        ["municipality", "oil_m3_2025", "oil_yoy_pct", "oil_five_year_pct"]
+    ].to_csv(paths.results / "top_oil_producers.csv", index=False)
+    summary.nlargest(10, "gas_m3_2025")[
+        ["municipality", "gas_m3_2025", "gas_yoy_pct", "gas_five_year_pct"]
+    ].to_csv(paths.results / "top_gas_producers.csv", index=False)
+    summary.nlargest(10, "well_count_2024")[
+        ["municipality", "well_count_2024", "well_count_yoy_pct", "well_count_five_year_pct"]
+    ].to_csv(paths.results / "top_well_activity.csv", index=False)
 
     metrics = {
         "source_records": int(len(fact)),
@@ -244,11 +408,15 @@ def write_outputs(paths: PublicPaths, tables: dict[str, pd.DataFrame], quality: 
         "quality_failures": int(quality["status"].eq("FAIL").sum()),
         "top_oil_municipality": str(summary.nlargest(1, "oil_m3_2025").iloc[0]["municipality"]),
         "top_gas_municipality": str(summary.nlargest(1, "gas_m3_2025").iloc[0]["municipality"]),
-        "top_well_count_municipality": str(summary.nlargest(1, "well_count_2024").iloc[0]["municipality"]),
+        "top_well_count_municipality": str(
+            summary.nlargest(1, "well_count_2024").iloc[0]["municipality"]
+        ),
         "parquet_written": parquet_written,
         "database_path": str(paths.database.relative_to(paths.root)),
     }
-    (paths.results / "summary_metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    (paths.results / "summary_metrics.json").write_text(
+        json.dumps(metrics, indent=2), encoding="utf-8"
+    )
     run_manifest = {
         "source_files": sorted(path.name for path in paths.source.glob("*.csv")),
         "bronze_tables": sorted(path.name for path in paths.bronze.glob("*.csv")),
@@ -272,7 +440,9 @@ def run_public_pipeline(root: Path) -> dict[str, Any]:
     bronze = load_bronze(paths)
     quality = quality_report(bronze)
     if quality.query("status == 'FAIL' and severity == 'ERROR'").shape[0]:
-        raise ValueError("Blocking data-quality checks failed; review results/data_quality_report.csv")
+        raise ValueError(
+            "Blocking data-quality checks failed; review results/data_quality_report.csv"
+        )
     silver = build_silver(paths, bronze)
     gold = build_gold(silver)
     write_database(paths, gold)

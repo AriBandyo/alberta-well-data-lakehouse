@@ -1,5 +1,5 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 from alberta_well_lakehouse.public_spark import run
 
