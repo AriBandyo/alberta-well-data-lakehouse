@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.env.local
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.dagster/
+dbt/alberta_well_analytics/target/
+dbt/alberta_well_analytics/logs/
+data/external/*
+!data/external/.gitkeep
+lakehouse/bronze/official_energy_activity/
+lakehouse/silver/official_energy_activity/

@@ -1,0 +1,33 @@
+# Install the full project environment with:
+#   python -m pip install -r requirements.txt
+
+# Core data pipeline
+pandas>=2.2,<3
+numpy>=1.26,<3
+requests>=2.32,<3
+python-dotenv>=1.0,<2
+matplotlib>=3.8,<4
+
+# Analytics storage and columnar outputs
+duckdb>=1.1,<2
+pyarrow>=17,<22
+
+# Spark lakehouse
+pyspark==4.0.0
+delta-spark==4.0.0
+
+# SQL transformations
+dbt-duckdb==1.10.1
+
+# Orchestration
+dagster>=1.13,<1.14
+dagster-webserver>=1.13,<1.14
+dagster-dbt>=0.29,<0.30
+
+# Validation and code quality
+pytest>=8,<10
+ruff>=0.9,<1
+mypy>=1.11,<2
+
+# Install this repository package
+-e .

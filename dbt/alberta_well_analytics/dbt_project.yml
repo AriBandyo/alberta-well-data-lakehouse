@@ -1,0 +1,12 @@
+name: alberta_well_analytics
+version: '1.1.0'
+config-version: 2
+profile: alberta_well_analytics
+model-paths: ["models"]
+clean-targets: ["target", "dbt_packages"]
+models:
+  alberta_well_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

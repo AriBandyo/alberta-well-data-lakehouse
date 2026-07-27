@@ -1,0 +1,22 @@
+version: 2
+models:
+  - name: stg_public_energy_activity
+    columns:
+      - name: municipality_key
+        tests: [not_null]
+      - name: metric
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['oil_production', 'natural_gas_production', 'well_count']
+      - name: value
+        tests: [not_null]
+  - name: mart_metric_summary
+    columns:
+      - name: metric
+        tests: [not_null]
+  - name: mart_municipality_rankings
+    columns:
+      - name: snapshot_rank
+        tests: [not_null]

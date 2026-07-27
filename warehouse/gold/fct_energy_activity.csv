@@ -1,0 +1,34 @@
+municipality_key,municipality,year,metric,value,unit,yoy_change_pct,five_year_change_pct
+e903eee28e71,Rocky View County,2025,natural_gas_production,1700000000.0,m3,19.8,22.2
+3b12ce1117bf,Special Area No. 4,2025,natural_gas_production,293600000.0,m3,-24.5,-38.3
+054b0fa1c822,Fairview No. 136,2025,natural_gas_production,252300000.0,m3,-3.48,-28.7
+8e4dc1f4f41a,Warner County No. 5,2025,natural_gas_production,246300000.0,m3,-11.5,23.0
+b5c9ef564d6b,Opportunity No. 17,2025,natural_gas_production,118600000.0,m3,-9.44,-14.8
+6390285e4aab,Special Area No. 3,2025,natural_gas_production,21400000.0,m3,-22.0,-51.6
+ad04a5d6e3de,Peace No. 135,2025,natural_gas_production,11400000.0,m3,-23.3,-30.8
+e5ad794c0fcd,Acadia No. 34,2025,natural_gas_production,2400000.0,m3,-29.8,-45.8
+59213a077d07,Edmonton,2025,natural_gas_production,773400.0,m3,-5.06,-26.9
+341f887ca706,Calgary,2025,natural_gas_production,466800.0,m3,-13.7,-37.6
+2c74a352550c,Bonnyville No. 87,2025,oil_production,32500000.0,m3,8.67,27.0
+142ea646fdd7,Lesser Slave River No. 124,2025,oil_production,6300000.0,m3,14.6,343.8
+0cd75a814fce,Greenview No. 16,2025,oil_production,5200000.0,m3,12.2,50.7
+b5c9ef564d6b,Opportunity No. 17,2025,oil_production,3100000.0,m3,-3.94,-15.1
+53183b2008d7,Provost No. 52,2025,oil_production,1200000.0,m3,-1.52,3.09
+86a078b2ff30,Wainwright No. 61,2025,oil_production,1000000.0,m3,6.41,28.9
+e4135f046a88,Special Area No. 2,2025,oil_production,462060.0,m3,-0.37,3.87
+c41c50ac5ab8,"Taber, M.D.",2025,oil_production,359101.0,m3,-8.08,-19.7
+e053c93457c8,Athabasca County,2025,oil_production,172596.0,m3,-3.1,543.9
+ad04a5d6e3de,Peace No. 135,2025,oil_production,40395.0,m3,-23.5,-38.3
+6390285e4aab,Special Area No. 3,2025,oil_production,37985.0,m3,-7.38,-19.0
+59213a077d07,Edmonton,2025,oil_production,3725.0,m3,-14.9,-27.3
+0cd75a814fce,Greenview No. 16,2024,well_count,571.0,count,-8.35,24.1
+142ea646fdd7,Lesser Slave River No. 124,2024,well_count,551.0,count,-0.36,-26.3
+2c74a352550c,Bonnyville No. 87,2024,well_count,286.0,count,6.72,-1.04
+3b12ce1117bf,Special Area No. 4,2024,well_count,112.0,count,-5.88,-42.3
+b5c9ef564d6b,Opportunity No. 17,2024,well_count,99.0,count,1.02,209.4
+53183b2008d7,Provost No. 52,2024,well_count,83.0,count,-7.78,-29.1
+86a078b2ff30,Wainwright No. 61,2024,well_count,62.0,count,-3.13,264.7
+e053c93457c8,Athabasca County,2024,well_count,34.0,count,0.0,-15.0
+e4135f046a88,Special Area No. 2,2024,well_count,15.0,count,-11.8,-55.9
+ad04a5d6e3de,Peace No. 135,2024,well_count,9.0,count,0.0,80.0
+6390285e4aab,Special Area No. 3,2024,well_count,4.0,count,0.0,300.0

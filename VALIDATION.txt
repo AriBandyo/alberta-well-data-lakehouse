@@ -1,0 +1,23 @@
+Alberta Well and Production Data Lakehouse validation
+
+Validated on 2026-07-24
+
+- Official public-data snapshot files present: PASS
+- Source manifest present: PASS
+- Default pipeline execution: PASS
+- Source records processed: 33
+- Distinct municipalities: 18
+- Automated data-quality checks: 18
+- Data-quality failures: 0
+- Bronze outputs generated: PASS
+- Silver outputs generated: PASS
+- Gold outputs generated: PASS
+- SQLite analytics database generated: PASS
+- Tableau extracts generated: PASS
+- Browser dashboard generated: PASS
+- Ranked result tables generated: PASS
+- Four charts generated: PASS
+- Python syntax compilation: PASS
+- Pytest suite: 5 passed
+
+Parquet files are generated when PyArrow from requirements.txt is installed. The validation environment did not include PyArrow, so committed serving outputs are CSV and SQLite.

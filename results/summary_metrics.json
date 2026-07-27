@@ -1,0 +1,17 @@
+{
+  "source_records": 33,
+  "municipalities": 18,
+  "oil_records": 12,
+  "gas_records": 10,
+  "well_count_records": 11,
+  "snapshot_oil_m3": 50375862.0,
+  "snapshot_gas_m3": 2647240200.0,
+  "snapshot_reported_wells": 1826,
+  "quality_checks": 18,
+  "quality_failures": 0,
+  "top_oil_municipality": "Bonnyville No. 87",
+  "top_gas_municipality": "Rocky View County",
+  "top_well_count_municipality": "Greenview No. 16",
+  "parquet_written": true,
+  "database_path": "warehouse/alberta_energy_analytics.sqlite"
+}

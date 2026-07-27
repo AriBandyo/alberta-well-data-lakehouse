@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<datasource inline='true' version='18.1' name='Alberta Public Energy Activity'>
+  <connection class='textscan' directory='data' filename='public_municipality_energy_summary.csv' />
+  <aliases enabled='yes' />
+</datasource>

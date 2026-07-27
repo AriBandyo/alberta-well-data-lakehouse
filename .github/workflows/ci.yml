@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip
+      - run: pip install pandas matplotlib requests python-dotenv pytest ruff
+      - run: pip install -e . --no-deps
+      - run: ruff check src orchestration scripts tests
+      - run: pytest -q
+      - run: python scripts/build_public_data_project.py
+      - run: test -f warehouse/alberta_energy_analytics.sqlite
+      - run: test -f results/summary_metrics.json
+      - run: test -f tableau/dashboard_preview.html

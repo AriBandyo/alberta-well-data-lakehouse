@@ -1,0 +1,2 @@
+[console_scripts]
+well-lakehouse = alberta_well_lakehouse.cli:main

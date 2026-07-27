@@ -1,0 +1,19 @@
+services:
+  pipeline:
+    build: .
+    working_dir: /app
+    command: python scripts/build_public_data_project.py
+    volumes:
+      - ./results:/app/results
+      - ./warehouse:/app/warehouse
+      - ./tableau:/app/tableau
+      - ./lakehouse:/app/lakehouse
+
+  dagster:
+    build: .
+    working_dir: /app
+    command: dagster dev -m orchestration.definitions -h 0.0.0.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app

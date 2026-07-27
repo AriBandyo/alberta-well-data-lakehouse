@@ -1,0 +1,53 @@
+{
+  "source_files": [
+    "natural_gas_production_by_municipality_2025.csv",
+    "oil_production_by_municipality_2025.csv",
+    "well_count_by_municipality_2024.csv"
+  ],
+  "bronze_tables": [
+    "gas.csv",
+    "oil.csv",
+    "wells.csv"
+  ],
+  "silver_tables": [
+    "gas.csv",
+    "oil.csv",
+    "wells.csv"
+  ],
+  "gold_tables": [
+    "dim_municipality.csv",
+    "fct_energy_activity.csv",
+    "mart_municipality_energy_summary.csv"
+  ],
+  "serving_database": "warehouse/alberta_energy_analytics.sqlite",
+  "tableau_extracts": [
+    "data_quality_report.csv",
+    "public_municipality_energy_summary.csv",
+    "public_natural_gas_production_2025.csv",
+    "public_oil_production_2025.csv",
+    "public_well_count_2024.csv"
+  ],
+  "result_files": [
+    "ANALYSIS.md",
+    "ANALYSIS.md:Zone.Identifier",
+    "data_quality_report.csv",
+    "data_quality_report.csv:Zone.Identifier",
+    "pipeline_run_manifest.json",
+    "pipeline_run_manifest.json:Zone.Identifier",
+    "summary_metrics.json",
+    "summary_metrics.json:Zone.Identifier",
+    "top_gas_producers.csv",
+    "top_gas_producers.csv:Zone.Identifier",
+    "top_oil_producers.csv",
+    "top_oil_producers.csv:Zone.Identifier",
+    "top_well_activity.csv",
+    "top_well_activity.csv:Zone.Identifier"
+  ],
+  "row_counts": {
+    "dim_municipality": 18,
+    "fct_energy_activity": 33,
+    "mart_municipality_energy_summary": 18
+  },
+  "quality_checks": 18,
+  "quality_failures": 0
+}

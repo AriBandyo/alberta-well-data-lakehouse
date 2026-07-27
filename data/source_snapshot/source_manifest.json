@@ -1,0 +1,57 @@
+{
+  "snapshot_name": "Alberta municipality energy activity public-data snapshot",
+  "snapshot_retrieved_at": "2026-07-24",
+  "licence": "Open Government Licence - Alberta",
+  "datasets": [
+    {
+      "file": "oil_production_by_municipality_2025.csv",
+      "records": 12,
+      "reference_year": 2025,
+      "metric": "oil_production",
+      "source": "Government of Alberta Regional Dashboard",
+      "source_last_updated": "2026-04-09"
+    },
+    {
+      "file": "natural_gas_production_by_municipality_2025.csv",
+      "records": 10,
+      "reference_year": 2025,
+      "metric": "natural_gas_production",
+      "source": "Government of Alberta Regional Dashboard",
+      "source_last_updated": "2026-04-09"
+    },
+    {
+      "file": "well_count_by_municipality_2024.csv",
+      "records": 11,
+      "reference_year": 2024,
+      "metric": "well_count",
+      "source": "Government of Alberta Regional Dashboard",
+      "source_last_updated": "2025-08-01"
+    }
+  ],
+  "upstream_full_sources": [
+    {
+      "name": "AER ST37 List of Wells in Alberta",
+      "refresh_frequency": "monthly",
+      "formats": [
+        "Excel",
+        "Geodatabase",
+        "Shapefile"
+      ],
+      "included_in_repository": false
+    },
+    {
+      "name": "Petrinex Alberta Public Data",
+      "refresh_frequency": "monthly",
+      "datasets": [
+        "Well Infrastructure",
+        "Well Licence",
+        "Facility Infrastructure",
+        "Facility Operator History",
+        "Well to Facility Link",
+        "Conventional Volumetric Data"
+      ],
+      "included_in_repository": false
+    }
+  ],
+  "note": "The repository bundles a small, auditable official public-data snapshot. Large upstream AER and Petrinex extracts are downloaded locally by the refresh script and are not redistributed in this repository."
+}

@@ -1,0 +1,12 @@
+pyspark==4.0.0
+delta-spark==4.0.0
+pandas<3,>=2.2
+pyarrow<22,>=17
+duckdb<2,>=1.1
+dbt-duckdb==1.10.1
+dagster<1.14,>=1.13
+dagster-webserver<1.14,>=1.13
+dagster-dbt<0.30,>=0.29
+python-dotenv<2,>=1.0
+requests<3,>=2.32
+matplotlib<4,>=3.8

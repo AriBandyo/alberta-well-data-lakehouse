@@ -1,0 +1,7 @@
+alberta_well_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('WAREHOUSE_DB_PATH', 'warehouse/alberta_well_analytics.duckdb') }}"
+      threads: 4

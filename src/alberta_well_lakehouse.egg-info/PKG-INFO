@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: alberta-well-lakehouse
+Version: 1.1.0
+Summary: Official public-data Alberta well and production analytics lakehouse
+Requires-Python: <3.14,>=3.10
+License-File: LICENSE
+License-File: LICENSE:Zone.Identifier
+Requires-Dist: pyspark==4.0.0
+Requires-Dist: delta-spark==4.0.0
+Requires-Dist: pandas<3,>=2.2
+Requires-Dist: pyarrow<22,>=17
+Requires-Dist: duckdb<2,>=1.1
+Requires-Dist: dbt-duckdb==1.10.1
+Requires-Dist: dagster<1.14,>=1.13
+Requires-Dist: dagster-webserver<1.14,>=1.13
+Requires-Dist: dagster-dbt<0.30,>=0.29
+Requires-Dist: python-dotenv<2,>=1.0
+Requires-Dist: requests<3,>=2.32
+Requires-Dist: matplotlib<4,>=3.8
+Dynamic: license-file
